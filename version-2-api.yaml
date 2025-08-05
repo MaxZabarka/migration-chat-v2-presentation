@@ -1,0 +1,1101 @@
+openapi: 3.0.3
+info:
+  title: Chat API
+  description: API for managing conversations and messages in a chat application
+  license:
+    name: ''
+  version: 0.1.0
+paths:
+  /api/api-keys:
+    get:
+      tags:
+      - api-keys
+      operationId: list_api_keys
+      responses:
+        '200':
+          description: API keys retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListApiKeysResponse'
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+    post:
+      tags:
+      - api-keys
+      operationId: create_api_key
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateApiKeyRequest'
+        required: true
+      responses:
+        '200':
+          description: API key created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateApiKeyResponse'
+        '400':
+          description: Invalid request
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+  /api/api-keys/{key_id}:
+    delete:
+      tags:
+      - api-keys
+      operationId: deactivate_api_key
+      parameters:
+      - name: key_id
+        in: path
+        description: API key ID to deactivate
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: API key deactivated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeactivateApiKeyResponse'
+        '400':
+          description: Invalid key ID
+        '401':
+          description: Unauthorized
+        '404':
+          description: API key not found
+        '500':
+          description: Internal server error
+  /api/bots:
+    get:
+      tags:
+      - bots
+      operationId: list_bots
+      responses:
+        '200':
+          description: Bots retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListBotsResponse'
+        '500':
+          description: Internal server error
+    post:
+      tags:
+      - bots
+      operationId: create_bot
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBotRequest'
+        required: true
+      responses:
+        '200':
+          description: Bot created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateBotResponse'
+        '500':
+          description: Internal server error
+  /api/bots/{bot_id}:
+    get:
+      tags:
+      - bots
+      operationId: get_bot
+      parameters:
+      - name: bot_id
+        in: path
+        description: Bot identifier
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Bot retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetBotResponse'
+        '404':
+          description: Bot not found
+        '500':
+          description: Internal server error
+    put:
+      tags:
+      - bots
+      operationId: update_bot
+      parameters:
+      - name: bot_id
+        in: path
+        description: Bot identifier
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateBotRequest'
+        required: true
+      responses:
+        '200':
+          description: Bot updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateBotResponse'
+        '404':
+          description: Bot not found
+        '500':
+          description: Internal server error
+    delete:
+      tags:
+      - bots
+      operationId: delete_bot
+      parameters:
+      - name: bot_id
+        in: path
+        description: Bot identifier
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '204':
+          description: Bot deleted successfully
+        '404':
+          description: Bot not found
+        '500':
+          description: Internal server error
+  /api/content:
+    get:
+      tags:
+      - content
+      operationId: list_content
+      parameters:
+      - name: bot_id
+        in: query
+        description: Bot identifier
+        required: true
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: 'Maximum number of items to return (default: 30, max: 30)'
+        required: false
+        schema:
+          type: integer
+          format: int32
+          nullable: true
+          minimum: 0
+      - name: search
+        in: query
+        description: Search query for semantic content search
+        required: false
+        schema:
+          type: string
+          nullable: true
+      - name: media_type
+        in: query
+        description: 'Media type filter: ''image'' or ''video'' (defaults to all types if not specified)'
+        required: false
+        schema:
+          allOf:
+          - $ref: '#/components/schemas/MediaTypeFilter'
+          nullable: true
+      responses:
+        '200':
+          description: Content list retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListContentResponse'
+        '400':
+          description: Invalid query parameters
+        '404':
+          description: Bot not found
+        '500':
+          description: Internal server error
+    post:
+      tags:
+      - content
+      operationId: upload_content
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UploadContentRequest'
+        required: true
+      responses:
+        '200':
+          description: Content uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadContentResponse'
+        '400':
+          description: Invalid request - URL is not an image or bot not found
+        '500':
+          description: Internal server error
+  /api/content/{content_id}:
+    delete:
+      tags:
+      - content
+      operationId: delete_content
+      parameters:
+      - name: content_id
+        in: path
+        description: Content identifier
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Content deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteContentResponse'
+        '404':
+          description: Content not found
+        '500':
+          description: Internal server error
+  /api/conversations:
+    get:
+      tags:
+      - conversations
+      operationId: list_conversations
+      parameters:
+      - name: bot_id
+        in: query
+        description: Filter conversations by bot ID
+        required: false
+        schema:
+          type: string
+          nullable: true
+      - name: user_id
+        in: query
+        description: Filter conversations by user ID
+        required: false
+        schema:
+          type: string
+          nullable: true
+      - name: conversation_id
+        in: query
+        description: Filter conversations by specific conversation ID
+        required: false
+        schema:
+          type: string
+          nullable: true
+      - name: min_messages
+        in: query
+        description: Filter conversations with at least this many messages
+        required: false
+        schema:
+          type: integer
+          format: int32
+          nullable: true
+      - name: max_messages
+        in: query
+        description: Filter conversations with at most this many messages
+        required: false
+        schema:
+          type: integer
+          format: int32
+          nullable: true
+      - name: message_content
+        in: query
+        description: Search for conversations containing this text in messages
+        required: false
+        schema:
+          type: string
+          nullable: true
+      - name: min_last_message_date
+        in: query
+        description: Filter conversations with last message after this timestamp (Unix epoch)
+        required: false
+        schema:
+          type: integer
+          format: int32
+          nullable: true
+      - name: max_last_message_date
+        in: query
+        description: Filter conversations with last message before this timestamp (Unix epoch)
+        required: false
+        schema:
+          type: integer
+          format: int32
+          nullable: true
+      responses:
+        '200':
+          description: Conversations retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListConversationsResponse'
+        '500':
+          description: Internal server error
+    post:
+      tags:
+      - conversations
+      operationId: create_conversation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateConversationRequest'
+        required: true
+      responses:
+        '200':
+          description: Conversation created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateConversationResponse'
+        '500':
+          description: Internal server error
+  /api/conversations/{conversation_id}:
+    patch:
+      tags:
+      - conversations
+      operationId: update_conversation
+      parameters:
+      - name: conversation_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateConversationRequestBody'
+        required: true
+      responses:
+        '200':
+          description: Conversation updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateConversationResponse'
+        '404':
+          description: Conversation not found
+        '500':
+          description: Internal server error
+  /api/conversations/{id}:
+    get:
+      tags:
+      - conversations
+      operationId: get_conversation
+      parameters:
+      - name: id
+        in: path
+        description: Conversation ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Conversation retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetConversationResponse'
+        '500':
+          description: Internal server error
+  /api/conversations/{id}/memories:
+    get:
+      tags:
+      - conversations
+      operationId: get_memories
+      parameters:
+      - name: id
+        in: path
+        description: Conversation ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Memories retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetMemoriesResponse'
+        '404':
+          description: Conversation not found
+        '500':
+          description: Internal server error
+  /api/conversations/{id}/messages:
+    post:
+      tags:
+      - messages
+      operationId: send_message
+      parameters:
+      - name: id
+        in: path
+        description: Conversation ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendMessageRequest'
+        required: true
+      responses:
+        '202':
+          description: Message sent successfully
+        '500':
+          description: Internal server error
+components:
+  schemas:
+    APIAttribute:
+      type: object
+      required:
+      - name
+      - value
+      properties:
+        name:
+          type: string
+          description: Name of the attribute
+          example: full_name
+        value:
+          type: string
+          description: Value of the attribute
+          example: Scarlett Jones
+      example:
+        name: full_name
+        value: Scarlett Jones
+    APIModerationCategory:
+      type: string
+      enum:
+      - underage_site_use
+      - sexual_minors
+      - beastiality
+      - sexual_violence
+      - prompt_injection
+    APIModerationInfo:
+      type: object
+      required:
+      - category
+      - reasoning
+      - severity
+      properties:
+        category:
+          $ref: '#/components/schemas/APIModerationCategory'
+        reasoning:
+          type: string
+          description: Explanation of why this message was flagged
+          example: User explicitly stated they are 16 years old, which is under the required age of 18 for this site.
+        severity:
+          $ref: '#/components/schemas/APIModerationSeverity'
+      example:
+        category: underage_site_use
+        reasoning: User explicitly stated they are 16 years old, which is under the required age of 18 for this site.
+        severity: Critical
+    APIModerationSeverity:
+      type: string
+      enum:
+      - Low
+      - Medium
+      - High
+      - Critical
+    ApiKeyInfo:
+      type: object
+      description: Represents an API key info (without the actual key)
+      required:
+      - id
+      - key_prefix
+      - name
+      - is_active
+      - created_at
+      properties:
+        created_at:
+          type: string
+          format: date-time
+        id:
+          type: string
+          format: uuid
+        is_active:
+          type: boolean
+        key_prefix:
+          type: string
+        name:
+          type: string
+    Bot:
+      type: object
+      required:
+      - id
+      - name
+      - freeform
+      - attributes
+      properties:
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/APIAttribute'
+          description: List of bot attributes
+        freeform:
+          type: string
+          description: Freeform text description
+          example: Scarlett loves to travel, she is fresh out of college. Her personality is shy. She enjoys going to fancy restaurants and especially loves tropical destinations. Scarlett's favorite food is cheesecake
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the bot
+          example: 550e8400-e29b-41d4-a716-446655440000
+        name:
+          type: string
+          description: Name of the bot
+          example: Scarlett
+      example:
+        attributes:
+        - name: full_name
+          value: Scarlett Jones
+        - name: age
+          value: '23'
+        - name: residence
+          value: New York
+        - name: location
+          value: Travelling in Europe
+        - name: height
+          value: five foot two inches
+        - name: hair
+          value: long, wavy, blonde
+        - name: body
+          value: small but curvy
+        - name: language
+          value: English and French
+        - name: job
+          value: Real estate agent
+        - name: orientation
+          value: bisexual
+        freeform: Scarlett loves to travel, she is fresh out of college. Her personality is shy. She enjoys going to fancy restaurants and especially loves tropical destinations. Scarlett's favorite food is cheesecake
+        id: 550e8400-e29b-41d4-a716-446655440000
+        name: Scarlett
+    Content:
+      type: object
+      required:
+      - url
+      properties:
+        content_id:
+          type: string
+          description: Unique identifier for the content
+          example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+          nullable: true
+        url:
+          type: string
+          format: uri
+          description: URL to the attached media
+          example: https://your-cdn/link-to-image.jpg
+      example:
+        content_id: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+        url: https://s3.us-east-005.backblazeb2.com/priori-chat/image-123.jpg
+    Conversation:
+      type: object
+      required:
+      - id
+      - messages
+      - bot_id
+      properties:
+        bot_id:
+          type: string
+          format: uuid
+          description: ID of the bot associated with this conversation
+        id:
+          type: string
+          description: The unique ID of the conversation
+          example: 550e8400-e29b-41d4-a716-446655440000
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Message'
+          description: Messages in the conversation
+        user_id:
+          type: string
+          description: ID of the user associated with this conversation
+          nullable: true
+    ConversationHeader:
+      type: object
+      required:
+      - id
+      - bot_id
+      - message_count
+      properties:
+        bot_id:
+          type: string
+          format: uuid
+          description: ID of the bot associated with this conversation
+          example: 550e8400-e29b-41d4-a716-446655440000
+        id:
+          type: string
+          description: Unique identifier for the conversation
+          example: conv_abc123def456
+        last_message:
+          allOf:
+          - $ref: '#/components/schemas/Message'
+          nullable: true
+        message_count:
+          type: integer
+          format: int32
+          description: Total number of messages in this conversation
+          example: 42
+          minimum: 0
+        searched_message:
+          allOf:
+          - $ref: '#/components/schemas/SearchedMessage'
+          nullable: true
+        user_id:
+          type: string
+          description: ID of the user associated with this conversation
+          example: user_123
+          nullable: true
+    CreateApiKeyRequest:
+      type: object
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          description: Name/description for the API key
+          example: API Key
+      example:
+        name: API Key
+    CreateApiKeyResponse:
+      type: object
+      required:
+      - api_key
+      - key_info
+      properties:
+        api_key:
+          type: string
+          description: The generated API key (only shown once)
+          example: sk_name_abcdef1234567890abcdef1234567890
+        key_info:
+          $ref: '#/components/schemas/ApiKeyInfo'
+    CreateBotRequest:
+      type: object
+      required:
+      - name
+      properties:
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/APIAttribute'
+          description: List of bot attributes
+        freeform:
+          type: string
+          description: Freeform text description
+          example: Scarlett loves to travel, she is fresh out of college.
+          nullable: true
+        name:
+          type: string
+          description: Name of the bot
+          example: Scarlett
+      example:
+        attributes:
+        - name: full_name
+          value: Scarlett Jones
+        - name: age
+          value: '23'
+        - name: residence
+          value: New York
+        freeform: Scarlett loves to travel, she is fresh out of college. Her personality is shy. She enjoys going to fancy restaurants and especially loves tropical destinations. Scarlett's favorite food is cheesecake
+        name: Scarlett
+    CreateBotResponse:
+      type: object
+      required:
+      - bot
+      properties:
+        bot:
+          $ref: '#/components/schemas/Bot'
+    CreateConversationRequest:
+      type: object
+      required:
+      - bot_id
+      - user_id
+      properties:
+        bot_id:
+          type: string
+          format: uuid
+          description: ID of the bot to associate with this conversation
+          example: 550e8400-e29b-41d4-a716-446655440000
+        create_user_if_not_exists:
+          type: boolean
+          description: Whether to create the user if they don't exist. Defaults to true for seamless user onboarding
+          example: true
+          nullable: true
+        user_id:
+          type: string
+          description: ID of the user to associate with this conversation. Use whatever user ID format you use in your system
+          example: user_123
+        webhook:
+          type: string
+          format: uri
+          description: Optional webhook URL to call when messages are received in this conversation
+          example: https://example.com/webhook
+          nullable: true
+        with_messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Message'
+          description: Optional list of initial messages for the conversation
+          nullable: true
+      example:
+        bot_id: 550e8400-e29b-41d4-a716-446655440000
+        create_user_if_not_exists: true
+        user_id: user_123
+        webhook: https://example.com/webhook
+        with_messages:
+        - attached_media: null
+          from_bot: true
+          text: Heyyy how are you??
+    CreateConversationResponse:
+      type: object
+      required:
+      - conversation
+      properties:
+        conversation:
+          $ref: '#/components/schemas/Conversation'
+      example:
+        bot_id: 550e8400-e29b-41d4-a716-446655440000
+        id: conv_abc123def456
+        messages: []
+    DeactivateApiKeyResponse:
+      type: object
+      required:
+      - message
+      properties:
+        message:
+          type: string
+          description: Success message
+    DeleteContentResponse:
+      type: object
+      required:
+      - message
+      properties:
+        message:
+          type: string
+          description: Success message
+          example: Content deleted successfully
+    GetBotResponse:
+      type: object
+      required:
+      - bot
+      properties:
+        bot:
+          $ref: '#/components/schemas/Bot'
+    GetConversationResponse:
+      type: object
+      required:
+      - messages
+      - bot_id
+      properties:
+        bot_id:
+          type: string
+          format: uuid
+          description: ID of the bot associated with this conversation
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Message'
+          description: Messages in the conversation
+        user_id:
+          type: string
+          description: ID of the user associated with this conversation
+          nullable: true
+    GetMemoriesResponse:
+      type: object
+      required:
+      - bot_memories
+      - user_memories
+      properties:
+        bot_memories:
+          type: array
+          items:
+            $ref: '#/components/schemas/MemoryResponse'
+          description: Bot memories for this conversation
+        user_memories:
+          type: array
+          items:
+            $ref: '#/components/schemas/MemoryResponse'
+          description: User memories for this conversation
+    ListApiKeysResponse:
+      type: object
+      required:
+      - api_keys
+      properties:
+        api_keys:
+          type: array
+          items:
+            $ref: '#/components/schemas/ApiKeyInfo'
+          description: List of API keys for the client
+    ListBotsResponse:
+      type: object
+      required:
+      - bots
+      properties:
+        bots:
+          type: array
+          items:
+            $ref: '#/components/schemas/Bot'
+          description: List of all bots
+    ListContentQuery:
+      type: object
+      required:
+      - bot_id
+      properties:
+        bot_id:
+          type: string
+          format: uuid
+          description: ID of the bot to list content for
+          example: 550e8400-e29b-41d4-a716-446655440000
+        limit:
+          type: integer
+          format: int32
+          description: 'Maximum number of content items to return (default: 30, max: 30)'
+          example: 20
+          nullable: true
+          minimum: 0
+        media_type:
+          allOf:
+          - $ref: '#/components/schemas/MediaTypeFilter'
+          nullable: true
+        search:
+          type: string
+          description: Search query for semantic content search
+          example: hawaii vacation
+          nullable: true
+    ListContentResponse:
+      type: object
+      required:
+      - content
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/Content'
+          description: List of content items
+    ListConversationsResponse:
+      type: object
+      required:
+      - conversations
+      properties:
+        conversations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConversationHeader'
+          description: List of conversations
+      example:
+        conversations:
+        - bot_id: 550e8400-e29b-41d4-a716-446655440000
+          id: conv_abc123def456
+          messages:
+          - attached_media: null
+            from_bot: true
+            text: Hello!
+    MediaTypeFilter:
+      type: string
+      enum:
+      - image
+      - video
+    MemoryResponse:
+      type: object
+      required:
+      - text
+      properties:
+        text:
+          type: string
+          description: Text content of the memory
+    Message:
+      type: object
+      required:
+      - text
+      - from_bot
+      properties:
+        attached_media:
+          allOf:
+          - $ref: '#/components/schemas/Content'
+          nullable: true
+        from_bot:
+          type: boolean
+          description: Whether this message is from a bot (true) or human (false)
+          example: false
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the content
+          nullable: true
+        message_tone:
+          type: string
+          description: |-
+            What tone was used to generate the message (useful only for debug or display in admin
+            panel. Does nothing as input parameter, only output)
+          example: Flirty
+          nullable: true
+        moderation:
+          allOf:
+          - $ref: '#/components/schemas/APIModerationInfo'
+          nullable: true
+        sent_at:
+          type: integer
+          format: int64
+          description: Unix timestamp when the message was sent
+          example: 1640995200
+          nullable: true
+        text:
+          type: string
+          description: The text content of the message
+          example: Heyyy how are you?
+      example:
+        attached_media: null
+        from_bot: true
+        sent_at: 1640995200
+        text: Heyyy how are you??
+    SearchedMessage:
+      type: object
+      required:
+      - message_text
+      - match_start
+      - match_end
+      - from_bot
+      - sent_at
+      properties:
+        from_bot:
+          type: boolean
+          description: Whether this message was sent by the bot
+          example: false
+        match_end:
+          type: integer
+          description: End index of the match within the message text
+          example: 5
+          minimum: 0
+        match_start:
+          type: integer
+          description: Start index of the match within the message text
+          example: 0
+          minimum: 0
+        message_text:
+          type: string
+          description: The text content of the matched message
+          example: Hello, how are you?
+        sent_at:
+          type: integer
+          format: int64
+          description: Unix timestamp when the message was sent
+          example: 1640995200
+    SendMessageRequest:
+      type: object
+      required:
+      - message
+      properties:
+        message:
+          $ref: '#/components/schemas/Message'
+      example:
+        message:
+          attached_media: null
+          from_bot: false
+          text: Hey what's your name?
+    UpdateBotRequest:
+      type: object
+      properties:
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/APIAttribute'
+          description: List of bot attributes
+        freeform:
+          type: string
+          description: Freeform text description
+          example: Scarlett loves to travel, she is fresh out of college.
+          nullable: true
+        name:
+          type: string
+          description: Name of the bot
+          example: Scarlett
+          nullable: true
+      example:
+        attributes:
+        - name: full_name
+          value: Scarlett Jones
+        - name: age
+          value: '23'
+        - name: residence
+          value: New York
+        freeform: Scarlett loves to travel, she is fresh out of college. Her personality is shy. She enjoys going to fancy restaurants and especially loves tropical destinations. Scarlett's favorite food is cheesecake
+        name: Scarlett
+    UpdateBotResponse:
+      type: object
+      required:
+      - bot
+      properties:
+        bot:
+          $ref: '#/components/schemas/Bot'
+    UpdateConversationRequestBody:
+      type: object
+      properties:
+        webhook:
+          type: string
+          format: uri
+          description: Optional webhook URL to call when messages are received in this conversation
+          example: https://example.com/webhook
+          nullable: true
+      example:
+        webhook: https://example.com/webhook
+    UpdateConversationResponse:
+      type: object
+      required:
+      - success
+      properties:
+        success:
+          type: boolean
+      example:
+        success: true
+    UploadContentRequest:
+      type: object
+      required:
+      - image_url
+      - bot_id
+      properties:
+        bot_id:
+          type: string
+          format: uuid
+          description: ID of the bot this content belongs to
+          example: 550e8400-e29b-41d4-a716-446655440000
+        image_url:
+          type: string
+          description: URL of the image to upload (can be a remote URL like https://example.com/image.jpg or a data URL like data:image/jpeg;base64,...)
+          example: https://example.com/image.jpg
+      example:
+        bot_id: 550e8400-e29b-41d4-a716-446655440000
+        image_url: https://example.com/image.jpg
+    UploadContentResponse:
+      type: object
+      required:
+      - content
+      properties:
+        content:
+          $ref: '#/components/schemas/Content'
+tags:
+- name: conversations
+  description: Conversation management endpoints
+- name: messages
+  description: Message management endpoints
+- name: bots
+  description: Bot management endpoints
+- name: api-keys
+  description: API key management endpoints
+- name: content
+  description: Content management endpoints
