@@ -656,7 +656,85 @@ pre code { font-size: 8px !important; line-height: 1.0 !important; }
 
 ---
 
-# V1 vs V3: Content & Image Handling
+# V1 vs V3: Bot Vault Content
+
+<div class="mb-2 p-2 bg-orange-50 border-l-4 border-orange-500 text-orange-900 text-xs">
+<strong>V1 Confusion:</strong> Two different endpoints with similar names but completely different purposes, request formats, and usage patterns
+</div>
+
+<style>
+pre code { font-size: 8px !important; line-height: 1.0 !important; }
+</style>
+
+<div class="grid grid-cols-2 gap-4 text-xs">
+
+<div>
+
+**V1: `/v2/content` - Bot Vault (Multipart)**
+
+```bash
+# CONFUSING: This is for BOT content libraries
+curl -X POST "/v2/content?bot_id=uuid" \
+  -H "Content-Type: multipart/form-data" \
+  -F "content=@image.jpg"
+```
+
+**Developer Confusion:**
+- Name suggests general "content" but it's bot-specific
+- Requires multipart/form-data (not JSON like other endpoints)
+- Query parameter for bot_id (not in body)
+- Creates searchable bot content library
+- Used via `chat_images_enabled: true` flag
+
+```javascript
+// Reference in conversations
+POST /v2/complete
+{
+  "chat_images_enabled": true // Bot picks from vault
+}
+```
+
+</div>
+
+<div>
+
+**V3: JSON URL-Based Upload**
+
+```javascript
+// Upload to bot content vault
+POST /api/content
+{
+  "image_url": "https://example.com/image.jpg",
+  "bot_id": "uuid"
+}
+
+// Response
+{
+  "content": {
+    "content_id": "a1b2c3d4-e5f6-7890...",
+    "url": "https://processed-url.com/image.jpg"
+  }
+}
+
+// Bot automatically searches and uses vault content
+// No special flags needed - works seamlessly
+```
+
+</div>
+
+</div>
+
+<div class="mt-2 p-2 bg-blue-50 border-l-4 border-blue-500 text-blue-900 text-xs">
+<strong>Vault Evolution:</strong> Both versions support bot content libraries with semantic search, but V3 uses consistent JSON interface instead of multipart forms.
+</div>
+
+---
+
+# V1 vs V3: User Content & Profile Photos
+
+<div class="mb-2 p-2 bg-orange-50 border-l-4 border-orange-500 text-orange-900 text-xs">
+<strong>V1 Developer Confusion:</strong> `/v2/content` vs `/v2/user_content` - similar names, completely different implementations (multipart vs raw binary vs JSON)
+</div>
 
 <style>
 pre code { font-size: 7px !important; line-height: 1.0 !important; }
@@ -666,62 +744,63 @@ pre code { font-size: 7px !important; line-height: 1.0 !important; }
 
 <div>
 
-**V1: Multiple Endpoints & Body Types**
+**V1: `/v2/user_content` - User Images (Raw Binary)**
 
 ```bash
-# Bot vault: multipart/form-data
-curl -F "content=@image.jpg" "/v2/content?bot_id=uuid"
-
-# User content: raw binary
-curl --data-binary "@photo.jpg" "/v2/user_content"
+# CONFUSING: This is for USER images, completely different!
+curl -X POST "/v2/user_content" \
+  -H "Content-Type: image/jpeg" \
+  --data-binary "@photo.jpg"
 # Response: {"id": "user-content-uuid"}
 ```
 
+**More Developer Confusion:**
+- Similar name to `/v2/content` but totally different purpose
+- Raw binary body (not multipart, not JSON)
+- No parameters needed (unlike /content)
+- For user-sent images, not bot libraries
+- Must reference by ID in separate API call
+
 ```javascript
-// Reference in conversation: JSON
+// Step 2: Reference in /v2/complete (4+ different ways!)
 POST /v2/complete
 {
-  "message": "Here's my photo",
-  "image_id": "user-content-uuid",
-  // OR "image_url": "https://url.jpg"
-  // OR "user_images": ["profile-img-id"]
-  "chat_images_enabled": true // Bot can use vault
+  "image_id": "user-content-uuid",    // Current message image
+  "image_url": "https://direct.jpg",  // OR direct URL
+  "user_images": ["profile-id-1"],    // OR profile photos
+  "bot_images": ["bot-profile-id"]    // OR bot profiles
 }
 ```
-
-**Problems:**
-- 3 different body types (multipart, binary, JSON)
-- 2-step process for user images
-- Multiple ways to reference content
 
 </div>
 
 <div>
 
-**V3: Unified JSON Approach**
+**V3: Direct Message Attachment**
 
 ```javascript
-// Bot vault: JSON
-POST /api/content
-{ "image_url": "https://url.jpg", "bot_id": "uuid" }
-
-// User content: direct message attachment
+// Single step: attach directly to message
 POST /api/conversations/conv-123/messages
 {
   "message": {
     "text": "Here's my photo",
-    "attached_media": { "url": "https://photo.jpg" }
+    "from_bot": false,
+    "attached_media": {
+      "url": "https://example.com/photo.jpg"
+    }
   }
 }
 
-// Bot can search/use vault content automatically
+// Profile photos handled through user/bot objects
+// Content processed on-demand
+// No separate upload step required
 ```
 
 **Benefits:**
-- Single JSON format across all endpoints
-- Direct attachment, no upload-then-reference
+- JSON-only, no binary uploads
+- Single-step direct attachment
 - One consistent way to handle content
-- URL-based, cloud-native approach
+- Profile photos managed at user/bot level
 
 </div>
 
@@ -730,11 +809,11 @@ POST /api/conversations/conv-123/messages
 <div class="mt-2 grid grid-cols-2 gap-4 text-xs">
 
 <div class="p-2 bg-red-50 border-l-4 border-red-500 text-red-900">
-**V1:** Multipart forms + raw binary + JSON = complex client code
+**V1 Confusion:** Similar endpoint names `/content` vs `/user_content` with completely different formats (multipart vs binary vs JSON) and purposes (bot vault vs user images)
 </div>
 
 <div class="p-2 bg-green-50 border-l-4 border-green-500 text-green-900">
-**V3:** JSON everywhere = simplified HTTP client implementation
+**V3 Clarity:** Clear separation - `/api/content` for bot vault, `attached_media` in messages for user content. All JSON, consistent patterns.
 </div>
 
 </div>
