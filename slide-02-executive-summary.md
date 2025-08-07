@@ -4,15 +4,32 @@ transition: fade-out
 
 # Executive Summary
 
+
+
 <v-clicks>
 
-- **Architecture Shift**: Single endpoint `/v2/complete` → Multiple REST endpoints `/api/...`
-- **State Management**: Stateless → Stateful conversations  
-- **Message Flow**: Send full context each time → Create conversation once, add messages
-- **Naming Clarification**: V1 API uses `/v2/complete`, V3 API uses `/api/...` routes
-
+## **Improved chat quality**
 </v-clicks>
 
-<div v-click class="mt-8 p-4 bg-red-100 border-l-4 border-red-500 text-red-700">
-  <strong>Important:</strong> Some V1 features are not yet available in V3 - migration planning required
-</div>
+<v-clicks>
+
+  - Reworked memory system
+  - New core LLM
+  - Reworked content recognition system
+  - Message "tone" system
+  - More attention to details
+  - Key goals: Improve engagement and process more messages
+</v-clicks>
+
+
+<v-clicks>
+
+## **More intuitive API**
+</v-clicks>
+
+<v-clicks>
+
+- **Architecture Shift**: 1 monolithic endpoint `/v2/complete` → Multiple REST endpoints `/api/...`
+- **State Management**: Stateless → Stateful conversations  
+- **Message Flow**: Send full context each time (endpoint driven) → Create conversation once, add messages (resource driven)
+</v-clicks>

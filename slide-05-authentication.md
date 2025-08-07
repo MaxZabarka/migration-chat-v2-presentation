@@ -34,13 +34,12 @@ const response = await fetch('/v2/complete', { // or /api/conversations
 ## V3 NEW: Portal API Key Generation
 
 <div class="text-center">
-  <!-- <img src="/path/to/api-key-portal-screenshot.png" alt="API Key Management Portal" class="w-full rounded border shadow"> -->
+  <img src="./api-key-portal.png" alt="API Key Management Portal" class="max-w-90  w-full rounded border shadow">
   <div class="text-xs mt-2 opacity-75">Screenshot: API Key Management Portal</div>
 </div>
 
 **New in V3:**
-- **Portal-based key generation** (shown above)
-- Self-service API key creation
+- Self-service **portal-based key generation** (shown above)
 - Key naming and organization
 - Visual key management interface
 - **Same tokens** - just easier to generate

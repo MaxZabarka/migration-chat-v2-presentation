@@ -3,8 +3,7 @@ theme: seriph
 background: https://cover.sli.dev
 title: Chat API Migration Guide
 info: |
-  ## Chat API Migration Guide: V1 to V3
-  Complete guide for migrating from single endpoint to REST architecture
+  ## Chat API Migration Guide
 class: text-center text-sm
 drawings:
   persist: false
@@ -25,42 +24,51 @@ h4 { @apply text-sm !important; }
 
 /* Slide 30 specific styles for smaller code */
 .slide-30-small-code .slidev-code {
-  font-size: 8px !important;
+  font-size: 12px !important;
   line-height: 1.3 !important;
+}
+
+/* Slide 34 specific styles for smaller code */
+.slide-34-small-code .slidev-code {
+  font-size: 8px !important;
+  line-height: 1.2 !important;
+}
+
+/* Slide 34 smaller h2 */
+.slide-34-small-code h2 {
+  font-size: 1rem !important;
 }
 </style>
 
----
-src: ./slide-01-title.md
----
+# Chat API Migration Guide
+
+
+<div class="abs-br m-6 flex gap-2">
+  <button @click="$slidev.nav.openInEditor()" title="Open in Editor" class="text-xl slidev-icon-btn opacity-50 !border-none !hover:text-white">
+    <carbon:edit />
+  </button>
+  <a href="https://github.com/slidevjs/slidev" target="_blank" alt="GitHub" title="Open in GitHub" class="text-xl slidev-icon-btn opacity-50 !border-none !hover:text-white">
+    <carbon:logo-github />
+  </a>
+</div>
+
 
 ---
 src: ./slide-02-executive-summary.md
 ---
 
 ---
-src: ./slide-03-v1-architecture.md
+src: ./slide-31-create-conversation.md
 ---
 
 ---
-src: ./slide-04-v3-architecture.md
+src: ./slide-32-add-message.md
 ---
 
 ---
-src: ./slide-05-authentication.md
+src: ./slide-33-retrieve-conversation.md
 ---
 
----
-src: ./slide-06-bot-creation.md
----
-
----
-src: ./slide-07-v1-complete-flow.md
----
-
----
-src: ./slide-08-v1-single-request.md
----
 
 ---
 src: ./slide-09-v1-flow-demo.md
@@ -71,67 +79,67 @@ src: ./slide-10-v3-flow-demo.md
 ---
 
 ---
+src: ./slide-34-smart-add-message.md
+---
+
+---
+src: ./slide-35-bot-user-endpoints.md
+---
+
+---
+src: ./slide-06-bot-creation.md
+---
+
+---
+src: ./slide-36-conversation-queries.md
+---
+
+---
+src: ./slide-05-authentication.md
+---
+
+---
 src: ./slide-11-segmentation-comparison.md
 ---
 
 ---
-src: ./slide-12-bot-vault-content.md
+src: ./slide-04-v3-architecture.md
 ---
 
 ---
-src: ./slide-13-user-content-photos.md
+src: ./slide-03-v1-architecture.md
 ---
 
----
-src: ./slide-14-v1-request-structure.md
----
 
 ---
-src: ./slide-15-request-comparison.md
+src: ./slide-41-moderation.md
 ---
 
----
-src: ./slide-16-features-lost.md
----
 
 ---
-src: ./slide-17-features-gained.md
+src: ./slide-30-proposed-migration.md
 ---
 
----
-src: ./slide-18-v1-complete-endpoint.md
----
-
----
-src: ./slide-19-complete-message-generation.md
----
-
----
-src: ./slide-20-response-structure.md
----
-
----
-src: ./slide-21-bot-management-comparison.md
----
-
----
-src: ./slide-22-data-migration-challenges.md
----
-
----
-src: ./slide-23-phase1-dual-support.md
----
-
----
-src: ./slide-24-phase2-native-v3.md
----
-
----
-src: ./slide-25-conversation-handling.md
----
 
 ---
 src: ./slide-26-sdk-overview.md
+---
+
+
+---
+src: ./slide-37-endpoint-comparison.md
+---
+
+---
+src: ./slide-38-webhook-payload-changes.md
+---
+
+---
+src: ./slide-39-message-format-changes.md
+---
+
+---
+src: ./slide-40-migration-checklist.md
 ---
 
 ---
@@ -139,13 +147,6 @@ src: ./slide-27-migration-timeline.md
 ---
 
 ---
-src: ./slide-28-questions-discussion.md
----
-
----
 src: ./slide-29-thank-you.md
 ---
 
----
-src: ./slide-30-proposed-migration.md
----

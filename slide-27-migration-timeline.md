@@ -2,29 +2,19 @@
 
 # Migration Timeline & Planning
 
-<div class="grid grid-cols-2 gap-8">
+<div class="grid grid-cols-3 gap-6">
 
 <div>
 
-## Phase 1: Preparation (2-4 weeks)
-<div class="text-sm">
+## Phase 1: Integration
+**Duration: 1 week**
 
-- **Audit existing V1 usage patterns**
-- **Identify critical missing features** 
-- **Plan workarounds for lost functionality**
-- **Set up V3 test environment**
-- **Create feature gap documentation**
+<div class="text-sm mt-3">
 
-</div>
-
-## Phase 2: Dual Implementation (4-6 weeks)
-<div class="text-sm">
-
-- **Implement V3 wrapper service**
-- **Add fallback to V1 on errors**
-- **Test with subset of traffic**
-- **Monitor performance differences**
-- **Train team on V3 concepts**
+- **Integrate new API**
+- Update auth token
+- Work with Priori team to migrate data (bots, content)
+- Testing internally
 
 </div>
 
@@ -32,32 +22,36 @@
 
 <div>
 
-## Phase 3: Gradual Migration (6-8 weeks)
-<div class="text-sm">
+## Phase 2: Testing & Data Collection  
+**Duration: 2 weeks**
 
-- **Migrate non-critical conversations first**
-- **Monitor webhook delivery and timing**
-- **Handle conversation state migration**
-- **Implement external storage for lost features**
-- **Performance optimization**
+<div class="text-sm mt-3">
 
-</div>
-
-## Phase 4: Complete Transition (2-3 weeks)
-<div class="text-sm">
-
-- **Migrate remaining conversations**
-- **Remove V1 dependencies**
-- **Clean up wrapper code**
-- **Full V3 native implementation**
-- **Documentation updates**
+- Collect messages for both teams to review and improve upon
+- **500-1000 messages per day target** 
+- (we will read every message)
+- Short and long conversation lengths
+- Make obvious improvements and fix obvious issues
+- Variety of sites and configuration
 
 </div>
 
 </div>
 
+<div>
+
+## Phase 3: Gradual AI Transition
+**Duration: Ongoing**
+
+<div class="text-sm mt-3">
+
+- **A/B testing implementation**
+- Increase AI usage based on data
+- Continuous improvement based on data
+
 </div>
 
-<div class="mt-6 p-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700">
-  <strong>Critical Success Factors:</strong> Feature gap mitigation, webhook reliability, conversation state management
 </div>
+
+</div>
+
