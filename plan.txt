@@ -1,0 +1,28 @@
+title
+executive summary
+  - why the new api is better
+  - plan for migration
+
+new endpoints intro
+  - quick overview of all new endpoints
+  - dedicated slide for add endpoint and create conversation endpoint
+
+proposed migration:
+ - all shown in one slide with magic move
+ - 1. show original /v2/complete endpoint wrapped in a generate() function, taking a conversation_id and bot_id
+ - 2. then, we morph it into the add endpoint instead, changing converswation_id to user_id
+ - 3. but! a conversation must be created first. show how to create a conversation beforehand. highlight create_user_if_not_exists
+- 4.  show how it's possible to add a message right after conversation creation with an add call. add one bot messsage with an image attached as the starting conversation
+- 5.  now, replace that add call with the equivalent with_messages parameter to show a start message from the bot with an image.
+ - 6. but, it's possible that a conversation already exists. show check for an existing conversation, and if that conversation does exist, we use that conversation id, isntead of the one we created.
+ 7. finally, add another parameter to generate, that has a list of messages and the conversation doesn't exist, we can use with_messages to create that conversation, otherwsie, we can use with_messages to create a starting conversation, otherwise, we can use the existing conversation
+
+ so the final pseudo code would be something like, obviously replaced with the corresponding rest endpoints. make your code example be in python:
+ generate(message, user_id, bot_id, existing_messages?) {
+  existing_conv = get conv (user id, bot id)
+  if existing conv exists, use it
+  new conv = if existing messages then new conv (with_messages=...) else new conv (with_messages={bot:true attached_media=...})
+
+  add_messages(conv, message)
+  // wait for response in webhook
+ }
